@@ -1,4 +1,4 @@
-# Alambic
+# Alambic [![Build Status](https://travis-ci.org/sdanzan/alambic.svg?branch=master)](https://travis-ci.org/sdanzan/alambic)
 
 An Elixir collection of small utilities.
 
@@ -9,6 +9,20 @@ An Elixir collection of small utilities.
    simple fan in scenarios.
 
 ## Installation
+
+Add the github repository to your mix dependencies:
+
+  1. Add alambic to your list of dependencies in `mix.exs`:
+
+        def deps do
+          [{:alambic, git: "https://github.com/sdanzan/alambic.git"}]
+        end
+
+  2. Ensure alambic is started before your application:
+
+        def application do
+          [applications: [:alambic]]
+        end
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
