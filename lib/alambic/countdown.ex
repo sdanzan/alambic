@@ -16,7 +16,7 @@ defmodule Alambic.CountDown do
   @moduledoc """
   A simple countdown latch implementation useful for simple fan in scenarios.
   It is initialized with a count and clients can wait on it to be signaled
-  when the count reaches 0.
+  when the count reaches 0, decrement the count or increment the count.
 
   It is implemented as a GenServer.
   """
@@ -31,20 +31,20 @@ defmodule Alambic.CountDown do
 
   @doc ~S"""
   Create a CountDown object with `count` initial count.
-  `count` must be a strictly positive integer.
+  `count` must be a positive integer.
   """
   @spec create(integer) :: t
-  def create(count) when is_integer(count) and count > 0 do
+  def create(count) when is_integer(count) and count >= 0 do
     {:ok, pid} = GenServer.start(__MODULE__, count)
     %CountDown{id: pid}
   end
 
   @doc """
-  Create a CountDown with `count`initial count. It is linked
+  Create a CountDown with `count` initial count. It is linked
   to the current process.
   """
   @spec create_link(integer) :: t
-  def create_link(count) when is_integer(count) and count > 0 do
+  def create_link(count) when is_integer(count) and count >= 0 do
     {:ok, pid} = GenServer.start(__MODULE__, count)
     %CountDown{id: pid}
   end
@@ -55,22 +55,31 @@ defmodule Alambic.CountDown do
     GenServer.cast(pid, :destroy)
   end
 
-  @doc "Wait for the ocunt to reach."
+  @doc "Wait for the ocunt to reach 0."
   @spec wait(t) :: :ok | :error
   def wait(_ = %CountDown{id: pid}) do
     GenServer.call(pid, :wait, :infinity)
   end
 
-  @doc "Decrease the count by one."
-  @spec signal(t) :: :ok | :error
+  @doc """
+  Decrease the count by one.
+  Returns true if the count reached 0, false otherwise.
+  """
+  @spec signal(t) :: true | false
   def signal(_ = %CountDown{id: pid}) do
     GenServer.call(pid, :signal)
+  end
+
+  @doc "Increase the count by one."
+  @spec increase(t) :: :ok | :error
+  def increase(_ = %CountDown{id: pid}) do
+    GenServer.call(pid, :increase)
   end
 
   @doc "Reset the count to a new value."
   @spec reset(t, integer) :: :ok
   def reset(_ = %CountDown{id: pid}, count)
-  when is_integer(count) and count > 0 do
+  when is_integer(count) and count >= 0 do
     GenServer.call(pid, {:reset, count})
   end
 
@@ -123,12 +132,21 @@ defmodule Alambic.CountDown do
   end
 
   def handle_call(:signal, _, {waiting, 1}) do
-    waiting |> Enum.each(&GenServer.reply(&1, :ok))
+    flush_waiting(waiting)
     {:reply, true, {[], 0}}
   end
 
   def handle_call(:signal, _, {w, count}) do
     {:reply, false, {w, count - 1}}
+  end
+
+  def handle_call(:increase, _, {w, count}) do
+    {:reply, :ok, {w, count + 1}}
+  end
+
+  def handle_call({:reset, 0}, _, {w, _}) do
+    flush_waiting(w)
+    {:reply, :ok, {[], 0}}
   end
 
   def handle_call({:reset, count}, _, {w, _}) do
@@ -137,5 +155,9 @@ defmodule Alambic.CountDown do
 
   def handle_call(:count, _, {w, count}) do
     {:reply, count, {w, count}}
+  end
+
+  defp flush_waiting(waiting) do
+    waiting |> Enum.each(&GenServer.reply(&1, :ok))
   end
 end

@@ -18,10 +18,15 @@ defmodule Alambic.CountDown.Tests do
     %CountDown{id: pid} = c
     assert is_pid(pid)
     CountDown.destroy(c)
+
+    c = CountDown.create(0)
+    %CountDown{id: pid} = c
+    assert is_pid(pid)
+    CountDown.wait(c)
+    CountDown.destroy(c)
   end
 
   test "cannot_create_negative_CountDown" do
-    catch_error CountDown.create(0)
     catch_error CountDown.create(-1)
   end
 
@@ -40,8 +45,8 @@ defmodule Alambic.CountDown.Tests do
   @tag count: 1
   test "wait", %{c: c} do
     me = self
-    spawn fn -> send me, CountDown.wait(c) end
-    spawn fn -> send me, CountDown.wait(c) end
+    spawn fn -> send(me, CountDown.wait(c)) end
+    spawn fn -> send(me, CountDown.wait(c)) end
 
     refute_receive _, 500
 
@@ -54,8 +59,8 @@ defmodule Alambic.CountDown.Tests do
   test "destroy" do
     c = CountDown.create(1)
     me = self
-    spawn fn -> send me, CountDown.wait(c) end
-    spawn fn -> send me, CountDown.wait(c) end
+    spawn fn -> send(me, CountDown.wait(c)) end
+    spawn fn -> send(me, CountDown.wait(c)) end
 
     refute_receive _, 100
 
@@ -68,7 +73,7 @@ defmodule Alambic.CountDown.Tests do
   @tag count: 1
   test "reset countdown", %{c: c} do
     me = self
-    spawn fn -> send me, CountDown.wait(c) end
+    spawn fn -> send(me, CountDown.wait(c)) end
 
     refute_receive _, 100
 
@@ -76,5 +81,21 @@ defmodule Alambic.CountDown.Tests do
     false = CountDown.signal(c)
 
     refute_receive _, 100
+  end
+
+  @tag count: 0
+  test "increase countdown", %{c: c} do
+    me = self
+    spawn fn -> send(me, CountDown.wait(c)) end
+
+    assert_receive _, 100
+
+    CountDown.increase(c)
+
+    spawn fn -> send(me, CountDown.wait(c)) end
+    refute_receive _, 100
+
+    CountDown.signal(c)
+    assert_receive _, 100
   end
 end
