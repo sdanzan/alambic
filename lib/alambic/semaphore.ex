@@ -47,8 +47,8 @@ defmodule Alambic.Semaphore do
   the current process.
 
       iex> s = Alambic.Semaphore.create_link(3)
-      iex> is_nil(s.id)
-      false
+      iex> Alambic.Semaphore.destroy(s)
+      :ok
   """
   @spec create_link(integer) :: t
   def create_link(max) when is_integer(max) and max > 0 do
@@ -128,12 +128,12 @@ defmodule Alambic.Semaphore do
     {:ok, {:queue.new, 0, max}}
   end
 
-  def terminate({:shutdown, :destroyed}, {waiting, _, _}) do
+  def terminate(_, {waiting, _, _}) do
     :queue.to_list(waiting) |> Enum.each(&GenServer.reply(&1, :error))
   end
 
   def handle_cast(:destroy, state) do
-    {:stop, {:shutdown, :destroyed}, state}
+    {:stop, :normal, state}
   end
 
   def handle_call(:acquire, from, {waiting, acquired, max})

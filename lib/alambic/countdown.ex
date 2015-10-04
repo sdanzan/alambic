@@ -48,8 +48,8 @@ defmodule Alambic.CountDown do
   to the current process.
 
       iex> c = Alambic.CountDown.create_link(2)
-      iex> is_nil(c.id)
-      false
+      iex> Alambic.CountDown.destroy(c)
+      :ok
   """
   @spec create_link(integer) :: t
   def create_link(count) when is_integer(count) and count >= 0 do
@@ -119,12 +119,12 @@ defmodule Alambic.CountDown do
     {:ok, {[], count}}
   end
 
-  def terminate({:shutdown, :destroyed}, {waiting, _}) do
+  def terminate(_, {waiting, _}) do
     waiting |> Enum.each(&GenServer.reply(&1, :error))
   end
 
   def handle_cast(:destroy, state) do
-    {:stop, {:shutdown, :destroyed}, state}
+    {:stop, :normal, state}
   end
 
   def handle_call(:wait, _, state = {[], 0}) do
