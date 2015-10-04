@@ -45,6 +45,10 @@ defmodule Alambic.Semaphore do
   @doc """
   Create a semaphore with `max` slots. The semaphore is linked to
   the current process.
+
+      iex> s = Alambic.Semaphore.create_link(3)
+      iex> is_nil(s.id)
+      false
   """
   @spec create_link(integer) :: t
   def create_link(max) when is_integer(max) and max > 0 do

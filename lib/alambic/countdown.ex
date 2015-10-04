@@ -32,6 +32,10 @@ defmodule Alambic.CountDown do
   @doc ~S"""
   Create a CountDown object with `count` initial count.
   `count` must be a positive integer.
+
+      iex> c = Alambic.CountDown.create(2)
+      iex> is_nil(c.id)
+      false
   """
   @spec create(integer) :: t
   def create(count) when is_integer(count) and count >= 0 do
@@ -42,10 +46,14 @@ defmodule Alambic.CountDown do
   @doc """
   Create a CountDown with `count` initial count. It is linked
   to the current process.
+
+      iex> c = Alambic.CountDown.create_link(2)
+      iex> is_nil(c.id)
+      false
   """
   @spec create_link(integer) :: t
   def create_link(count) when is_integer(count) and count >= 0 do
-    {:ok, pid} = GenServer.start(__MODULE__, count)
+    {:ok, pid} = GenServer.start_link(__MODULE__, count)
     %CountDown{id: pid}
   end
 
