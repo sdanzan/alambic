@@ -1,13 +1,28 @@
 defmodule Alambic.Mixfile do
   use Mix.Project
 
+  @description """
+    A collection of small elixir utilities.
+
+    Semaphore: quick way of limiting access to a resource
+    CountDown: quick way of counting fan in/out events
+  """
+
   def project do
     [app: :alambic,
      version: "0.0.1",
+     description: @description,
+     package: package,
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps]
+  end
+
+  defp package do
+    [maintainers: ["Serge Danzanvilliers <serge.danzanvilliers@gmail.com>"],
+     licenses: ["Apache 2.0"],
+     links: %{"Github" => "https://github.com/sdanzan/alambic"}]
   end
 
   # Configuration for the OTP application
