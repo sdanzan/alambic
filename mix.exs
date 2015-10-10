@@ -2,10 +2,7 @@ defmodule Alambic.Mixfile do
   use Mix.Project
 
   @description """
-    A collection of small elixir utilities.
-
-    Semaphore: quick way of limiting access to a resource
-    CountDown: quick way of counting fan in/out events
+    A collection of small elixir utilities (Semaphore, CountDown).
   """
 
   def project do
