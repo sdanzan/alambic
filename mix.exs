@@ -39,6 +39,9 @@ defmodule Alambic.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:earmark, "~> 0.1.17", only: :docs},
+      {:ex_doc, "~> 0.10.0", only: :docs},
+    ]
   end
 end
