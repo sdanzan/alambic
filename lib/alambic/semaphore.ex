@@ -19,6 +19,10 @@ defmodule Alambic.Semaphore do
   full OTP artillery or complex process pooling.
 
   This semaphore is implemented as a GenServer.
+
+  If you need to start a named Semaphore as part of a supervision
+  tree, you should use directly the `GenServer.start/start_link`
+  functions passing the required `max` as argument.
   """
 
   @vsn 1
@@ -60,7 +64,7 @@ defmodule Alambic.Semaphore do
   Destroy a semaphore. Clients waiting on `acquire` will receive
   an `:error` response.
   """
-  @spec destroy(t) :: nil
+  @spec destroy(t) :: :ok
   def destroy(%Semaphore{id: pid}) do
     GenServer.cast(pid, :destroy)
   end
@@ -100,8 +104,8 @@ defmodule Alambic.Semaphore do
     GenServer.call(pid, :full?)
   end
 
-  ############
-  ## Protocols
+  # -----------------
+  # Waitable protocol
 
   defimpl Alambic.Waitable, for: Semaphore do
     @doc """
@@ -121,8 +125,8 @@ defmodule Alambic.Semaphore do
     end
   end
 
-  ######################
-  ## GenServer callbacks
+  # -------------------
+  # GenServer callbacks
 
   def init(max) do
     {:ok, {:queue.new, 0, max}}

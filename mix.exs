@@ -7,7 +7,7 @@ defmodule Alambic.Mixfile do
 
   def project do
     [app: :alambic,
-     version: "0.0.1",
+     version: "0.1.0",
      description: @description,
      package: package,
      elixir: "~> 1.1",

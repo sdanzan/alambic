@@ -19,6 +19,10 @@ defmodule Alambic.CountDown do
   when the count reaches 0, decrement the count or increment the count.
 
   It is implemented as a GenServer.
+
+  In the unlikely case you need to start a named CountDown you can directly
+  use the `GenServer.start/start_link` functions passing the required initial
+  `count` as argument.
   """
 
   @vsn 1
@@ -63,7 +67,7 @@ defmodule Alambic.CountDown do
     GenServer.cast(pid, :destroy)
   end
 
-  @doc "Wait for the ocunt to reach 0."
+  @doc "Wait for the count to reach 0."
   @spec wait(t) :: :ok | :error
   def wait(_ = %CountDown{id: pid}) do
     GenServer.call(pid, :wait, :infinity)
@@ -97,8 +101,8 @@ defmodule Alambic.CountDown do
     GenServer.call(pid, :count)
   end
 
-  ############
-  ## Protocols
+  # -----------------
+  # Waitable protocol
 
   defimpl Alambic.Waitable, for: CountDown do
     @spec wait(CountDown.t) :: :ok | :error
@@ -112,8 +116,8 @@ defmodule Alambic.CountDown do
     end
   end
 
-  ######################
-  ## GenServer callbacks
+  # -------------------
+  # GenServer callbacks
 
   def init(count) do
     {:ok, {[], count}}
