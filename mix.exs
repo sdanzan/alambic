@@ -17,7 +17,7 @@ defmodule Alambic.Mixfile do
   end
 
   defp package do
-    [maintainers: ["Serge Danzanvilliers <serge.danzanvilliers@gmail.com>"],
+    [maintainers: ["Serge Danzanvilliers"],
      licenses: ["Apache 2.0"],
      links: %{"Github" => "https://github.com/sdanzan/alambic"}]
   end

@@ -18,9 +18,9 @@ defmodule Alambic.Semaphore do
   control around resource access and do not want to resort to the
   full OTP artillery or complex process pooling.
 
-  This semaphore is implemented as a GenServer.
+  This semaphore is implemented as a `GenServer`.
 
-  If you need to start a named Semaphore as part of a supervision
+  If you need to start a named `Semaphore` as part of a supervision
   tree, you should use directly the `GenServer.start/start_link`
   functions passing the required `max` as argument.
   """
@@ -72,6 +72,12 @@ defmodule Alambic.Semaphore do
   @doc """
   Acquire a slot in the semaphore. Will block until a slot is available
   or the semaphore is destroyed.
+
+  ## Example
+
+      iex> s = Alambic.Semaphore.create(10)
+      iex> Alambic.Semaphore.acquire(s)
+      :ok
   """
   @spec acquire(t) :: :ok | :error
   def acquire(_ = %Semaphore{id: pid}) do
@@ -81,6 +87,13 @@ defmodule Alambic.Semaphore do
   @doc """
   Try to acquire a slot in the semaphore but does not block if no slot
   is available. Returns `true` if a slot was acquired, `false` otherwise.
+
+  ## Example
+
+      iex> s = Alambic.Semaphore.create(1)
+      iex> true = Alambic.Semaphore.try_acquire(s)
+      iex> Alambic.Semaphore.try_acquire(s)
+      false
   """
   @spec try_acquire(t) :: true | false
   def try_acquire(_ = %Semaphore{id: pid}) do
@@ -90,6 +103,15 @@ defmodule Alambic.Semaphore do
   @doc """
   Release a slot from the semaphore. `:error` is returned if no slot
   is currently acquired.
+
+  ## Example
+
+      iex> s = Alambic.Semaphore.create(1)
+      iex> Alambic.Semaphore.acquire(s)
+      iex> false = Alambic.Semaphore.try_acquire(s)
+      iex> Alambic.Semaphore.release(s)
+      iex> Alambic.Semaphore.try_acquire(s)
+      true
   """
   @spec release(t) :: :ok | :error
   def release(_ = %Semaphore{id: pid}) do
@@ -98,6 +120,14 @@ defmodule Alambic.Semaphore do
 
   @doc """
   Return `true` if no slot is available, `false` otherwise.
+
+  ## Example
+
+      iex> s = Alambic.Semaphore.create(1)
+      iex> false = Alambic.Semaphore.full?(s)
+      iex> Alambic.Semaphore.acquire(s)
+      iex> Alambic.Semaphore.full?(s)
+      true
   """
   @spec full?(t) :: true | false
   def full?(_ = %Semaphore{id: pid}) do

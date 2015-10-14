@@ -18,9 +18,9 @@ defmodule Alambic.CountDown do
   It is initialized with a count and clients can wait on it to be signaled
   when the count reaches 0, decrement the count or increment the count.
 
-  It is implemented as a GenServer.
+  It is implemented as a `GenServer`.
 
-  In the unlikely case you need to start a named CountDown you can directly
+  In the unlikely case you need to start a named `CountDown` you can directly
   use the `GenServer.start/start_link` functions passing the required initial
   `count` as argument.
   """
@@ -37,6 +37,8 @@ defmodule Alambic.CountDown do
   Create a CountDown object with `count` initial count.
   `count` must be a positive integer.
 
+  ## Example
+
       iex> c = Alambic.CountDown.create(2)
       iex> is_nil(c.id)
       false
@@ -51,6 +53,8 @@ defmodule Alambic.CountDown do
   Create a CountDown with `count` initial count. It is linked
   to the current process.
 
+  ## Example
+
       iex> c = Alambic.CountDown.create_link(2)
       iex> Alambic.CountDown.destroy(c)
       :ok
@@ -61,7 +65,15 @@ defmodule Alambic.CountDown do
     %CountDown{id: pid}
   end
 
-  @doc "Destroy the countdown object, returning `:error` to all waiters."
+  @doc """
+  Destroy the countdown object, returning `:error` to all waiters.
+
+  ## Example
+
+      iex> c = Alambic.CountDown.create(2)
+      iex> Alambic.CountDown.destroy(c)
+      :ok
+  """
   @spec destroy(t) :: :ok
   def destroy(_ = %CountDown{id: pid}) do
     GenServer.cast(pid, :destroy)
@@ -76,26 +88,60 @@ defmodule Alambic.CountDown do
   @doc """
   Decrease the count by one.
   Returns true if the count reached 0, false otherwise.
+
+  ## Example
+
+      iex> c = Alambic.CountDown.create(1)
+      iex> Alambic.CountDown.signal(c)
+      true
   """
   @spec signal(t) :: true | false
   def signal(_ = %CountDown{id: pid}) do
     GenServer.call(pid, :signal)
   end
 
-  @doc "Increase the count by one."
+  @doc """
+  Increase the count by one.
+
+  ## Example
+
+      iex> c = Alambic.CountDown.create(0)
+      iex> Alambic.CountDown.increase(c)
+      iex> Alambic.CountDown.signal(c)
+      true
+
+  """
   @spec increase(t) :: :ok | :error
   def increase(_ = %CountDown{id: pid}) do
     GenServer.call(pid, :increase)
   end
 
-  @doc "Reset the count to a new value."
+  @doc """
+  Reset the count to a new value.
+
+  ## Example
+
+      iex> c = Alambic.CountDown.create(10)
+      iex> false = Alambic.CountDown.signal(c)
+      iex> Alambic.CountDown.reset(c, 1)
+      iex> Alambic.CountDown.signal(c)
+      true
+  """
   @spec reset(t, integer) :: :ok
   def reset(_ = %CountDown{id: pid}, count)
   when is_integer(count) and count >= 0 do
     GenServer.call(pid, {:reset, count})
   end
 
-  @doc "Return the current count."
+  @doc """
+  Return the current count.
+
+  ## Example
+
+      iex> c = Alambic.CountDown.create(10)
+      iex> Alambic.CountDown.count(c)
+      10
+  """
   @spec count(t) :: integer
   def count(_ = %CountDown{id: pid}) do
     GenServer.call(pid, :count)

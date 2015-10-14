@@ -16,9 +16,10 @@ defmodule Alambic do
   @moduledoc """
   Various small utilities.
 
-  - *Semaphore* a simple semaphore implementation
-  - *CountDown* a simple countdown latch
+  - *Semaphore*, a simple semaphore implementation
+  - *CountDown*, a simple countdown latch
+  - *BlockingQueue*, a simple queue suitable for producer/consumer scenario
   """
 
-  @vsn "0.0.1"
+  @vsn "0.2.0"
 end
