@@ -1,4 +1,4 @@
-# Alambic [![Build Status](https://travis-ci.org/sdanzan/alambic.svg?branch=master)](https://travis-ci.org/sdanzan/alambic)
+# Alambic [![Build Status](https://travis-ci.org/sdanzan/alambic.svg?branch=master)](https://travis-ci.org/sdanzan/alambic) [![Hex pm](http://img.shields.io/hexpm/v/alambic.svg?style=flat)](https://hex.pm/packages/alambic)
 
 An Elixir collection of small utilities.
 
