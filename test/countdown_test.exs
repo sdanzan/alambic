@@ -83,6 +83,37 @@ defmodule Alambic.CountDown.Tests do
     refute_receive _, 100
   end
 
+  @tag count: 10
+  test "reset countdown to 0", %{c: c} do
+    me = self
+    spawn fn -> send(me, CountDown.wait(c)) end
+    spawn fn -> send(me, CountDown.wait(c)) end
+    spawn fn -> send(me, CountDown.wait(c)) end
+
+    refute_receive _, 100
+
+    :ok = CountDown.reset(c, 0)
+
+    assert_receive :ok, 100
+    assert_receive :ok, 100
+    assert_receive :ok, 100
+
+    :error = CountDown.signal(c)
+  end
+
+  @tag count: 1
+  test "waitable countdown", %{c: c} do
+    refute Alambic.Waitable.free?(c)
+
+    me = self
+    spawn(fn -> send(me, Alambic.Waitable.wait(c)) end)
+
+    refute_receive _, 200
+
+    CountDown.signal(c)
+    assert_receive :ok, 100
+  end
+
   @tag count: 0
   test "increase countdown", %{c: c} do
     me = self

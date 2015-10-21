@@ -36,4 +36,36 @@ defmodule Alambic.BlockingQueue.Tests do
 
     assert_receive :item1, 100
   end
+
+  test "try with waiters" do
+    q = BlockingQueue.create(1)
+    me = self
+
+    spawn(fn ->
+      {:ok, item} = BlockingQueue.dequeue(q)
+      send(me, item)
+    end)
+
+    refute_receive _, 100
+
+    assert BlockingQueue.try_enqueue(q, 1)
+    assert_receive 1, 100
+    assert BlockingQueue.try_enqueue(q, 2)
+
+    spawn(fn ->
+      BlockingQueue.enqueue(q, 3)
+      send(me, 3)
+    end)
+
+    refute_receive _, 500
+
+    {true, 2} = BlockingQueue.try_dequeue(q)
+    assert_receive 3, 100
+  end
+
+  test "completed" do
+    q = BlockingQueue.create(1)
+    BlockingQueue.complete(q)
+    refute BlockingQueue.try_enqueue(q, 1)
+  end
 end

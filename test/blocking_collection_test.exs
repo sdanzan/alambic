@@ -25,6 +25,15 @@ defmodule Alambic.BlockingCollection.Tests do
     assert 0 == BlockingCollection.count(c)
   end
 
+  test "try" do
+    c = BlockingQueue.create(1)
+    {false, :empty} = BlockingCollection.try_take(c)
+    assert BlockingCollection.try_add(c, 1)
+    refute BlockingCollection.try_add(c, 2)
+    {true, 1} = BlockingCollection.try_take(c)
+    assert 0 == BlockingCollection.count(c)
+  end
+
   test "collectable" do
     c = BlockingQueue.create()
     1..10 |> Enum.into(c)

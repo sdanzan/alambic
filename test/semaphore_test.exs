@@ -74,4 +74,24 @@ defmodule Alambic.Semaphore.Tests do
     assert_receive {:one, :error}
     assert_receive {:two, :error}
   end
+
+  test "waitable" do
+    s = Semaphore.create(1)
+    assert Alambic.Waitable.free?(s)
+
+    Semaphore.acquire(s)
+    refute Alambic.Waitable.free?(s)
+
+    me = self
+    spawn(fn ->
+      Alambic.Waitable.wait(s)
+      send(me, :ok)
+    end)
+
+    refute_receive _, 200
+
+    Semaphore.release(s)
+
+    assert_receive :ok, 100
+  end
 end
