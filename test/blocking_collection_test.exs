@@ -6,7 +6,7 @@ defmodule Alambic.BlockingCollection.Tests do
   test "simple enumeration" do
     c = BlockingQueue.create()
 
-    1..10 |> Enum.each &BlockingCollection.add(c, &1)
+    1..10 |> Enum.each(&BlockingCollection.add(c, &1))
     BlockingCollection.complete(c)
 
     assert 10 == Enum.count(c)
@@ -65,7 +65,7 @@ defmodule Alambic.BlockingCollection.Tests do
       BlockingCollection.complete(c)
     end)
 
-    me = self
+    me = self()
     spawn(fn ->
       l = Enum.to_list(c)
       send(me, l)

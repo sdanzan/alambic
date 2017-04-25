@@ -7,15 +7,15 @@ defmodule Alambic.Mixfile do
 
   def project do
     [app: :alambic,
-     version: "0.1.0",
+     version: "1.0.0",
      description: @description,
-     package: package,
-     elixir: "~> 1.1",
+     package: package(),
+     elixir: "~> 1.4.2",
      test_coverage: [tool: ExCoveralls],
      preferred_cli_env: [coveralls: :test],
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     deps: deps()]
   end
 
   defp package do
@@ -42,9 +42,9 @@ defmodule Alambic.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:earmark, "~> 0.1.17", only: :docs},
-      {:ex_doc, "~> 0.10.0", only: :docs},
-      {:excoveralls, "~> 0.4.0", only: :test}
+      {:earmark, "~> 1.2.0", only: :docs},
+      {:ex_doc, "~> 0.14.0", only: :docs},
+      {:excoveralls, "~> 0.6.3", only: :test}
     ]
   end
 end

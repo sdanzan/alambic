@@ -7,7 +7,7 @@ defmodule Alambic.BlockingQueue.Tests do
     q = BlockingQueue.create(1)
     :ok = BlockingQueue.enqueue(q, :item1)
 
-    me = self
+    me = self()
     spawn(fn ->
       BlockingQueue.enqueue(q, :item2)
       send(me, :done)
@@ -24,7 +24,7 @@ defmodule Alambic.BlockingQueue.Tests do
   test "blocking dequeue" do
     q = BlockingQueue.create(1)
 
-    me = self
+    me = self()
     spawn(fn ->
       {:ok, item} = BlockingQueue.dequeue(q)
       send(me, item)
@@ -39,7 +39,7 @@ defmodule Alambic.BlockingQueue.Tests do
 
   test "try with waiters" do
     q = BlockingQueue.create(1)
-    me = self
+    me = self()
 
     spawn(fn ->
       {:ok, item} = BlockingQueue.dequeue(q)

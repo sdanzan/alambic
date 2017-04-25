@@ -44,7 +44,7 @@ defmodule Alambic.CountDown.Tests do
 
   @tag count: 1
   test "wait", %{c: c} do
-    me = self
+    me = self()
     spawn fn -> send(me, CountDown.wait(c)) end
     spawn fn -> send(me, CountDown.wait(c)) end
 
@@ -58,7 +58,7 @@ defmodule Alambic.CountDown.Tests do
 
   test "destroy" do
     c = CountDown.create(1)
-    me = self
+    me = self()
     spawn fn -> send(me, CountDown.wait(c)) end
     spawn fn -> send(me, CountDown.wait(c)) end
 
@@ -72,7 +72,7 @@ defmodule Alambic.CountDown.Tests do
 
   @tag count: 1
   test "reset countdown", %{c: c} do
-    me = self
+    me = self()
     spawn fn -> send(me, CountDown.wait(c)) end
 
     refute_receive _, 100
@@ -85,7 +85,7 @@ defmodule Alambic.CountDown.Tests do
 
   @tag count: 10
   test "reset countdown to 0", %{c: c} do
-    me = self
+    me = self()
     spawn fn -> send(me, CountDown.wait(c)) end
     spawn fn -> send(me, CountDown.wait(c)) end
     spawn fn -> send(me, CountDown.wait(c)) end
@@ -105,7 +105,7 @@ defmodule Alambic.CountDown.Tests do
   test "waitable countdown", %{c: c} do
     refute Alambic.Waitable.free?(c)
 
-    me = self
+    me = self()
     spawn(fn -> send(me, Alambic.Waitable.wait(c)) end)
 
     refute_receive _, 200
@@ -116,7 +116,7 @@ defmodule Alambic.CountDown.Tests do
 
   @tag count: 0
   test "increase countdown", %{c: c} do
-    me = self
+    me = self()
     spawn fn -> send(me, CountDown.wait(c)) end
 
     assert_receive _, 100

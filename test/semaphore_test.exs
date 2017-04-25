@@ -46,7 +46,7 @@ defmodule Alambic.Semaphore.Tests do
     Semaphore.acquire(s)
     Semaphore.acquire(s)
 
-    me = self
+    me = self()
     spawn fn -> send(me, {:one, Semaphore.acquire(s)}) end
     spawn fn -> send(me, {:two, Semaphore.acquire(s)}) end
 
@@ -64,7 +64,7 @@ defmodule Alambic.Semaphore.Tests do
     Semaphore.acquire(s)
     Semaphore.acquire(s)
 
-    me = self
+    me = self()
     spawn fn -> send(me, {:one, Semaphore.acquire(s)}) end
     spawn fn -> send(me, {:two, Semaphore.acquire(s)}) end
 
@@ -82,7 +82,7 @@ defmodule Alambic.Semaphore.Tests do
     Semaphore.acquire(s)
     refute Alambic.Waitable.free?(s)
 
-    me = self
+    me = self()
     spawn(fn ->
       Alambic.Waitable.wait(s)
       send(me, :ok)
