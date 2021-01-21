@@ -122,6 +122,8 @@ defmodule Alambic.BlockingCollection.Enumerable do
         end
       end
 
+      def slice(_coll), do: {:error, __MODULE__}
+
       defoverridable [count: 1, member?: 2]
     end
   end
