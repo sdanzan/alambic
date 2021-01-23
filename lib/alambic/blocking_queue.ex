@@ -64,7 +64,7 @@ defmodule Alambic.BlockingQueue do
   end
 
   @doc """
-  Destroy a `BlockingQueue`, loosing all its current messages.
+  Destroy a `BlockingQueue`, losing all its current messages.
 
   ## Example
 
@@ -79,8 +79,8 @@ defmodule Alambic.BlockingQueue do
 
   @doc """
   Enqueue some value. If the queue currently contains the maximum
-  number of elements allowed, it will block until item has been
-  consumed.
+  number of elements allowed, it will block until at least one item
+  has been consumed.
 
   ## Example
 
