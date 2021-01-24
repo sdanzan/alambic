@@ -2,7 +2,7 @@ defmodule Alambic.Mixfile do
   use Mix.Project
 
   @description """
-    A collection of small elixir utilities (Semaphore, CountDown).
+    A collection of small elixir utilities (Semaphore, CountDown, BlockingQueue).
   """
 
   def project do
